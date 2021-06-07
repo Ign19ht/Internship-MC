@@ -14,7 +14,7 @@ class Vector:
 # Constants
 PATH_COORDS = r"Coords/"
 PATH_ANGLES = r"Angles/"
-HEADER = ["time", "arm left", "arm right", "legs left", "legs right"]
+HEADER = ["time", "leg left", "leg right", "arm left", "arm right"]
 
 files_in_coord = os.listdir(PATH_COORDS)
 files_in_angles = os.listdir(PATH_ANGLES)
@@ -28,7 +28,7 @@ def make_angles(markers_data, description):
         marker3 = markers_data[body_part[2]]
         marker4 = markers_data[body_part[3]]
 
-        bone1 = Vector(marker1.x - marker2.x, marker1.y - marker2.y, marker1.z - marker2.z)
+        bone1 = Vector(marker2.x - marker1.x, marker2.y - marker1.y, marker2.z - marker1.z)
         bone2 = Vector(marker3.x - marker4.x, marker3.y - marker4.y, marker3.z - marker4.z)
 
         len_bone1 = math.sqrt(bone1.x ** 2 + bone1.y ** 2 + bone1.z ** 2)

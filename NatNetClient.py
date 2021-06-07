@@ -367,7 +367,7 @@ class NatNetClient:
             # self.newFrameListener(frameNumber, markerSetCount, unlabeledMarkersCount, rigidBodyCount, skeletonCount,
             #                       labeledMarkerCount, timecode, timecodeSub, timestamp, isRecording,
             #                       trackedModelsChanged)
-            self.newFrameListener(frameNumber, markers_data, labeledMarkerCount, timestamp, isRecording)
+            self.newFrameListener(frameNumber, markers_data, rigidBodyCount, labeledMarkerCount, timestamp, isRecording)
 
     # Unpack a marker set description packet
     def __unpackMarkerSetDescription(self, data):

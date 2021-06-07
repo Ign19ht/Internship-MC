@@ -59,29 +59,60 @@ def create_markers_description(markers_data):
                 writer.writerow([markers_data[counter].id, 11])
             counter += 1
 
-        # # 2 highest part of legs
-        # for i in range(0, 2):
-        #     if markers_data[counter].pos.x > 0:
-        #         writer.writerow([markers_data[counter].id, 22])
-        #     else:
-        #         writer.writerow([markers_data[counter].id, 12])
-        #     counter += 1
-        #
-        # # 2 lowest part of hands
-        # for i in range(0, 2):
-        #     if markers_data[counter].pos.x > 0:
-        #         writer.writerow([markers_data[counter].id, 41])
-        #     else:
-        #         writer.writerow([markers_data[counter].id, 31])
-        #     counter += 1
-        #
-        # # 2 highest part of hands
-        # for i in range(0, 2):
-        #     if markers_data[counter].pos.x > 0:
-        #         writer.writerow([markers_data[counter].id, 42])
-        #     else:
-        #         writer.writerow([markers_data[counter].id, 32])
-        #     counter += 1
+        # 2 highest part of legs
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 22])
+            else:
+                writer.writerow([markers_data[counter].id, 12])
+            counter += 1
+
+        # 2 lowest part of legs
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 23])
+            else:
+                writer.writerow([markers_data[counter].id, 13])
+            counter += 1
+
+        # 2 highest part of legs
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 24])
+            else:
+                writer.writerow([markers_data[counter].id, 14])
+            counter += 1
+
+        # 2 lowest part of hands
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 41])
+            else:
+                writer.writerow([markers_data[counter].id, 31])
+            counter += 1
+
+        # 2 highest part of hands
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 42])
+            else:
+                writer.writerow([markers_data[counter].id, 32])
+            counter += 1
+
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 43])
+            else:
+                writer.writerow([markers_data[counter].id, 33])
+            counter += 1
+
+        # 2 highest part of hands
+        for i in range(0, 2):
+            if markers_data[counter].pos.x > 0:
+                writer.writerow([markers_data[counter].id, 44])
+            else:
+                writer.writerow([markers_data[counter].id, 34])
+            counter += 1
 
 
 def get_name_from_time():

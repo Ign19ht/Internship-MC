@@ -2,9 +2,12 @@ from NatNetClient import NatNetClient
 import time
 import csv
 
+# Global variables
 RECORDING = False
 TIME_START = 0
 TIME_ACTUAL = ""
+
+# Constants
 HEADER = ["time", "id", "x", "y", "z"]
 
 
@@ -21,8 +24,8 @@ def create_csv():
 
 
 def create_markers_description(markers_data):
-    sorted(markers_data, key= lambda marker: marker.pos.y)
-    with open("BP" + get_name_from_time(), 'w', newline='') as csvfile:
+    markers_data.sort(key= lambda marker: marker.pos.y)
+    with open("BP_" + get_name_from_time(), 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["id", "body part"])
         counter = 0
@@ -65,10 +68,10 @@ def get_name_from_time():
     return '_'.join(temp.split(":")) + ".csv"
 
 
-def receiveNewFrame(frameNumber, markers_data, labeledMarkerCount, timestamp, isRecording):
+def receive_new_frame(frame_number, markers_data, labeled_marker_count, timestamp, is_recording):
     global RECORDING, TIME_START, TIME_ACTUAL
 
-    if frameNumber == 1:
+    if frame_number == 1:
         create_markers_description(markers_data)
 
     # print("frame ", frameNumber)
@@ -84,15 +87,15 @@ def receiveNewFrame(frameNumber, markers_data, labeledMarkerCount, timestamp, is
 
     # print("***********************")
 
-    if not RECORDING and isRecording:
+    if not RECORDING and is_recording:
         RECORDING = True
         TIME_START = timestamp
-        TIME_ACTUAL = get_name_from_time() + ".csv"
+        TIME_ACTUAL = get_name_from_time()
         print(TIME_ACTUAL)
         print("started")
         create_csv()
 
-    if RECORDING and not isRecording:
+    if RECORDING and not is_recording:
         RECORDING = False
         print("stopped")
 
@@ -101,8 +104,8 @@ def receiveNewFrame(frameNumber, markers_data, labeledMarkerCount, timestamp, is
         # print("recording...", frameNumber)
 
 
-streamingClient = NatNetClient()
+streaming_client = NatNetClient()
 
-streamingClient.newFrameListener = receiveNewFrame
+streaming_client.newFrameListener = receive_new_frame
 
-streamingClient.run()
+streaming_client.run()

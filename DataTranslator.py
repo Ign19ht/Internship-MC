@@ -1,6 +1,7 @@
 import csv
 import math
 import os
+import shutil
 from dataclasses import dataclass
 from typing import Any
 
@@ -126,7 +127,7 @@ def save_angles(package_name, file_name, angles, time):
 
 
 def create_csv(package_name, file_name):
-    with open(PATH_COORDS + package_name + r"/" + file_name, 'w', newline='') as csv_file:
+    with open(PATH_TO + package_name + r"/" + file_name, 'w', newline='') as csv_file:
         csv.writer(csv_file).writerow(HEADER)
 
 
@@ -197,6 +198,9 @@ def start():
                 save_data(package, file, translate(markers_data, description), current_time)
 
             print("done")
+
+        if PATH_TO == PATH_COORDS:
+            shutil.copyfile(PATH_FROM + package + r"/BP.csv", PATH_TO + package + r"/BP.csv")
 
 
 if __name__ == '__main__':

@@ -49,7 +49,7 @@ def get_description(package_name):
     with open(PATH_DRAFT + package_name + r"/BP.csv", 'r') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            description[row["body part"]] = row["id"]
+            description[int(row["body part"])] = row["id"]
     return description
 
 
@@ -62,11 +62,11 @@ def fix_data(markers_data, description):
     fixed_data = dict()  # {marker id from bp file: position of this marker}
     extra_markers = []
     # fill dict
-    for bp, marker_id in description:
+    for bp, marker_id in description.items():
         fixed_data[marker_id] = None
 
     # divide markers on fixed and extra markers
-    for marker_id, pos in markers_data:
+    for marker_id, pos in markers_data.items():
         if marker_id in fixed_data:  # if marker didn't disappear
             fixed_data[marker_id] = pos
         elif marker_id in fixed_markers:  # if marker disappeared but we have found it
@@ -75,10 +75,10 @@ def fix_data(markers_data, description):
             extra_markers.append(MarkerData(marker_id, pos))
 
     # check for disappeared markers
-    for marker_id, pos in fixed_data:
+    for marker_id, pos in fixed_data.items():
         if pos is None:  # if marker disappeared
             bp = 0
-            for marker_bp, mk_id in description:  # get name of body part of disappeared marker
+            for marker_bp, mk_id in description.items():  # get name of body part of disappeared marker
                 if mk_id == marker_id:
                     bp = marker_bp
                     break
@@ -102,7 +102,7 @@ def fix_data(markers_data, description):
 
     # convert data from dict to sorted list by marker id
     result = []
-    for marker_id, pos in fixed_data:
+    for marker_id, pos in fixed_data.items():
         if pos is not None:
             result.append(MarkerData(marker_id, pos))
     result.sort(key=lambda marker: marker.id)
@@ -110,18 +110,18 @@ def fix_data(markers_data, description):
 
 
 def read_draft():
-    for package in files_in_coords:
+    for package in files_in_draft:
         print(package + ":")
 
         # check for exist
-        if package in files_in_draft:
+        if package in files_in_coords:
             print("has already been done")
             continue
         else:
             os.mkdir(PATH_COORDS + package)
 
         # get files
-        files = os.listdir(PATH_COORDS + package)
+        files = os.listdir(PATH_DRAFT + package)
 
         # get description
         description = get_description(package)

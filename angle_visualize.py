@@ -1,4 +1,4 @@
-from collections import Counter
+# usage python angle_visualize.py filename
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib import colors as mcolors
@@ -24,11 +24,12 @@ fig, axs = plt.subplots(num_plot)
 # choose random color:
 colors = random.sample(list(mcolors.CSS4_COLORS), num_plot)
 
+
 def animate(i):
     # plt.cla()
     for k in range(num_plot):
         axs[k].cla()
-        axs[k].plot(data['time'][:i + 1], refined_data[k][:i + 1], color=colors[k], label=data.keys()[k+1])
+        axs[k].plot(data['time'][:i + 1], refined_data[k][:i + 1], color=colors[k], label=data.keys()[k + 1])
         axs[k].set_xlabel('time')
         axs[k].set_ylabel('degree')
         axs[k].legend(loc='upper left')

@@ -25,7 +25,6 @@ PATH_DRAFT = r"Draft/"
 EUCLIDEAN = [0, 0, 0, 0, 0]
 files_in_coords = os.listdir(PATH_COORDS)
 files_in_draft = os.listdir(PATH_DRAFT)
-AMOUNT_OF_MARKERS = 20
 
 
 # Global variable
@@ -49,7 +48,7 @@ def read_bp_file(package_name):
     with open(PATH_DRAFT + package_name + r"/BP.csv", 'r') as csv_file:
         reader = csv.DictReader(csv_file)
         for row in reader:
-            description[row["id"]] = row["body part"]
+            description[row["body part"]] = row["id"]
     return description
 
 
@@ -61,12 +60,12 @@ def fix_data(markers_data, description):
     global fixed_markers
     fixed_data = dict()
     extra_markers = []
-    for marker_id in description:
+    for bp, marker_id in description:
         fixed_data[marker_id] = None
 
     # divide markers on fixed and extra markers
     for marker_id, pos in markers_data:
-        if marker_id in description:
+        if marker_id in fixed_data:
             fixed_data[marker_id] = pos
         elif marker_id in fixed_markers:
             fixed_data[fixed_markers[marker_id]] = pos
@@ -76,17 +75,19 @@ def fix_data(markers_data, description):
     # check for disappeared markers
     for marker_id, pos in fixed_data:
         if pos is None:
-            dist = EUCLIDEAN[(bd - 10) // 20 * 2 + (bd % 10 - 1) // 2 - bd // 53]
-
-            pair_bd = bd - 1 if bd % 2 == 0 else bd + 1
-            pair_id = 0
-            for mk_id, body_part in description:
-                if body_part == pair_bd:
-                    pair_id = mk_id
+            bp = 0
+            for marker_bp, mk_id in description:
+                if mk_id == marker_id:
+                    bp = marker_bp
                     break
 
+            dist = EUCLIDEAN[(bp - 10) // 20 * 2 + (bp % 10 - 1) // 2 - bp // 53]
+
+            pair_bp = bp - 1 if bp % 2 == 0 else bp + 1
+            pair_id = description[pair_bp]
+
             if fixed_data[pair_id] is None:
-                print("Bone disappeared", bd, pair_bd)
+                print("Bone disappeared", bp, pair_bp)
             else:
                 pair_pos = fixed_data[pair_id]
                 for marker in extra_markers:
@@ -96,10 +97,12 @@ def fix_data(markers_data, description):
                         fixed_markers[marker.id] = marker_id
                         break
 
-    # result = []
-    # for marker_id, pos in fixed_data:
-    #     if pos
-    # return fixed_data
+    result = []
+    for marker_id, pos in fixed_data:
+        if pos is not None:
+            result.append(MarkerData(marker_id, pos))
+    result.sort(key=lambda marker: marker.id)
+    return result
 
 
 def read_draft():
@@ -137,7 +140,6 @@ def read_draft():
                         csv_save(package, file, fix_data(markers_data, description), current_time)
                         current_time = row["time"]
                         markers_data.clear()
-                    # markers_data.append(MarkerData(row["id"], Vector(float(row["x"]), float(row["y"]), float(row["z"]))))
                     markers_data[row["id"]] = Vector(float(row["x"]), float(row["y"]), float(row["z"]))
                 csv_save(package, file, fix_data(markers_data, description), current_time)
 
@@ -145,6 +147,4 @@ def read_draft():
 
 
 if __name__ == "__main__":
-    a = [11, 12, 13, 14, 21, 22, 23, 24, 31, 32, 33, 34, 41, 42, 43, 44, 51, 52, 53, 54]
-    for bd in a:
-        print(bd, (bd - 10) // 20 * 2 + (bd % 10 - 1) // 2 - bd // 53)
+    read_draft()

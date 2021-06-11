@@ -23,9 +23,9 @@ from typing import Any, List
 
 @dataclass
 class Vector:
-    x: int
-    y: int
-    z: int
+    x: Any
+    y: Any
+    z: Any
 
 
 @dataclass

@@ -12,9 +12,9 @@ PATH = ""
 
 # Constants
 HEADER = ["time", "id", "x", "y", "z"]
-DIR = r"Coords/"
+DIR = r"Draft/"
 TEMP = "temp.csv"
-TYPES = {1: "upLift",
+TYPES = {1: "stoop",
          2: "squat",
          3: "sitStand"}
 
@@ -45,7 +45,7 @@ def set_file_name():
 
 
 def create_markers_description(markers_data):
-    markers_data.sort(key=lambda marker: marker.pos.y)
+    markers_data.sort(key=lambda marker: marker.pos.z)
     with open(PATH + "BP.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["id", "body part"])
@@ -81,6 +81,11 @@ def create_markers_description(markers_data):
                 writer.writerow([markers_data[counter].id, 24])
             else:
                 writer.writerow([markers_data[counter].id, 14])
+            counter += 1
+
+        # 4 markers for back
+        for i in range(1, 5):
+            writer.writerow([markers_data[counter].id, 5 * 10 + i])
             counter += 1
 
         # 2 highest part of arm
@@ -124,6 +129,7 @@ def get_name_from_time():
 def receive_new_frame(frame_number, markers_data, rigid_body_count, labeled_marker_count, timestamp, is_recording):
     global RECORDING, TIME_START, IS_FIRST
 
+    # create descriptions
     if IS_FIRST:
         create_markers_description(markers_data)
         print("description is created")
@@ -160,6 +166,9 @@ def receive_new_frame(frame_number, markers_data, rigid_body_count, labeled_mark
 
 
 if __name__ == '__main__':
+    if not os.path.exists(DIR):
+        os.mkdir(DIR)
+
     PATH = DIR + get_name_from_time() + r"/"
 
     os.mkdir(PATH)

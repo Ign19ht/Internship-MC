@@ -216,4 +216,7 @@ if __name__ == '__main__':
         save_data = save_angles
         translate = make_angles
 
+    if not os.path.exists(PATH_TO):
+        os.mkdir(PATH_TO)
+
     start()

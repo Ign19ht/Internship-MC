@@ -22,8 +22,8 @@ class MarkerData:
 HEADER = ["time", "id", "x", "y", "z"]
 PATH_COORDS = r"Coords/"
 PATH_DRAFT = r"Draft/"
-# TODO Record euclidean distance
-EUCLIDEAN = [0, 0, 0, 0, 0]  # distance between 2 marker in one bone
+EUCLIDEAN = [0.2459, 0.2755, 0.1446, 0.1752, 0.0642]  # distance between 2 marker in one bone
+ERROR = 0.0015
 files_in_coords = os.listdir(PATH_COORDS)
 files_in_draft = os.listdir(PATH_DRAFT)
 
@@ -83,7 +83,7 @@ def fix_data(markers_data, description):
                     bp = marker_bp
                     break
 
-            dist = EUCLIDEAN[(bp - 10) // 20 * 2 + (bp % 10 - 1) // 2 - bp // 53]  # get distance for its bone
+            euclidean_dist = EUCLIDEAN[(bp - 10) // 20 * 2 + (bp % 10 - 1) // 2 - bp // 53]  # get distance for its bone
 
             # find pair for disappeared marker
             pair_bp = bp - 1 if bp % 2 == 0 else bp + 1
@@ -93,9 +93,9 @@ def fix_data(markers_data, description):
                 print("Bone disappeared", bp, pair_bp)
             else:
                 pair_pos = fixed_data[pair_id]
-                for marker in extra_markers:  # searching disappeared marker among extra markers
-                    # TODO add error
-                    if dist == get_distance(pair_pos, marker.pos):
+                for marker in extra_markers:  # searching disappeared marker among extra markersa
+                    dist = get_distance(pair_pos, marker.pos)
+                    if euclidean_dist + ERROR >= dist >= euclidean_dist - ERROR:
                         fixed_data[marker_id] = marker.pos
                         fixed_markers[marker.id] = marker_id
                         break

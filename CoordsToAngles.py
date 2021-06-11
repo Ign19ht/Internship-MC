@@ -2,14 +2,13 @@ import csv
 import math
 import os
 from dataclasses import dataclass
-from typing import Any
 
 
 @dataclass
 class Vector:
-    x: Any
-    y: Any
-    z: Any
+    x: float
+    y: float
+    z: float
 
 
 # Constants
@@ -103,4 +102,8 @@ def check_coords_package():
 
 
 if __name__ == '__main__':
+    # if package Coords doesn't exist
+    if not os.path.exists(PATH_ANGLES):
+        os.mkdir(PATH_ANGLES)
+
     check_coords_package()

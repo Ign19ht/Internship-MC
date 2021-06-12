@@ -3,6 +3,7 @@ import math
 import os
 import shutil
 from dataclasses import dataclass
+from pathlib import Path
 
 
 @dataclass
@@ -93,7 +94,7 @@ def fix_data(markers_data, description):
                 print("Bone disappeared", bp, pair_bp)
             else:
                 pair_pos = fixed_data[pair_id]
-                for marker in extra_markers:  # searching disappeared marker among extra markersa
+                for marker in extra_markers:  # searching disappeared marker among extra markers
                     dist = get_distance(pair_pos, marker.pos)
                     if euclidean_dist + ERROR >= dist >= euclidean_dist - ERROR:
                         fixed_data[marker_id] = marker.pos
@@ -121,7 +122,9 @@ def read_draft():
             os.mkdir(PATH_COORDS + package)
 
         # get files
-        files = os.listdir(PATH_DRAFT + package)
+        files = sorted(Path(r"Draft/Fri_Jun_11_13_10_00_2021").iterdir(), key=os.path.getmtime)
+        # files = os.listdir(PATH_DRAFT + package)
+        # files.sort(key=os.path.getctime)
 
         # get description
         description = get_description(package)
@@ -131,26 +134,26 @@ def read_draft():
 
         # fix files
         for file in files:
-            if file == "BP.csv":
+            if file.name == "BP.csv":
                 continue
 
-            print(file + ":", end=" ")
+            print(file.name + ":", end=" ")
 
             # create new csv file
-            create_csv(package, file)
+            create_csv(package, file.name)
 
-            with open(PATH_DRAFT + package + r"/" + file) as csv_file:
+            with open(PATH_DRAFT + package + r"/" + file.name) as csv_file:
                 reader = csv.DictReader(csv_file)
                 current_time = "0.0"
                 markers_data = dict()
                 # reading data at one point in time, fix them and save in new file
                 for row in reader:
                     if current_time != row["time"]:
-                        csv_save(package, file, fix_data(markers_data, description), current_time)
+                        csv_save(package, file.name, fix_data(markers_data, description), current_time)
                         current_time = row["time"]
                         markers_data.clear()
                     markers_data[row["id"]] = Vector(float(row["x"]), float(row["y"]), float(row["z"]))
-                csv_save(package, file, fix_data(markers_data, description), current_time)
+                csv_save(package, file.name, fix_data(markers_data, description), current_time)
 
             print("done")
 

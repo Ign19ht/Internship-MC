@@ -23,8 +23,8 @@ class MarkerData:
 HEADER = ["time", "id", "x", "y", "z"]
 PATH_COORDS = r"Coords/"
 PATH_DRAFT = r"Draft/"
-EUCLIDEAN = [0.2459, 0.2755, 0.1446, 0.1752, 0.0642]  # distance between 2 marker in one bone
-ERROR = 0.0015
+EUCLIDEAN = [0.2459, 0.2756, 0.1446, 0.1752, 0.0642]  # distance between 2 marker in one bone
+ERROR = 0.0021
 files_in_coords = os.listdir(PATH_COORDS)
 files_in_draft = os.listdir(PATH_DRAFT)
 

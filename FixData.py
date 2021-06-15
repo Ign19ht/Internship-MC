@@ -122,15 +122,14 @@ def read_draft():
             os.mkdir(PATH_COORDS + package)
 
         # get files
-        files = sorted(Path(r"Draft/Fri_Jun_11_13_10_00_2021").iterdir(), key=os.path.getmtime)
-        # files = os.listdir(PATH_DRAFT + package)
-        # files.sort(key=os.path.getctime)
+        files = sorted(Path(PATH_DRAFT + package).iterdir(), key=os.path.getmtime)
 
         # get description
         description = get_description(package)
 
         # copy bp file from draft to coords
         shutil.copyfile(PATH_DRAFT + package + r"/BP.csv", PATH_COORDS + package + r"/BP.csv")
+        print("BP.csv: copied")
 
         # fix files
         for file in files:

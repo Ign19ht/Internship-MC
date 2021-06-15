@@ -120,7 +120,7 @@ def check_coords_package():
         files = os.listdir(PATH_COORDS + package)
 
         # initialize description
-        description = [[0 for _ in range(4)] for _ in range(4)]
+        description = [[0 for _ in range(4)] for _ in range(5)]
 
         # get description
         with open(PATH_COORDS + package + r"/BP.csv") as csv_file:

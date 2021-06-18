@@ -49,75 +49,59 @@ def create_markers_description(markers_data):
     with open(PATH + "BP.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["id", "body part"])
-        counter = 0
+        counter = 1
 
-        # 2 lowest part of shins
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 21])
+        for marker in markers_data:
+            if marker.pos.x > 0.6 or marker.pos.x < -0.6:
+                continue
+            if marker.pos.y > 0.1 or marker.pos.y < -0.6:
+                continue
+            if marker.pos.z > 2.7 or marker.pos.z < 0.03:
+                continue
+            if counter <= 2:  # 2 lowest part of shins
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 21])
+                else:
+                    writer.writerow([marker.id, 11])
+            elif counter <= 4:  # 2 highest part of shins
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 22])
+                else:
+                    writer.writerow([marker.id, 12])
+            elif counter <= 6:  # 2 lowest part of thighs
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 23])
+                else:
+                    writer.writerow([marker.id, 13])
+            elif counter <= 8:  # 2 highest part of thighs
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 24])
+                else:
+                    writer.writerow([marker.id, 14])
+            elif counter <= 12:  # 4 markers for back
+                writer.writerow([marker.id, 5 * 10 + counter - 9])
+            elif counter <= 14:  # 2 highest part of arm
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 41])
+                else:
+                    writer.writerow([marker.id, 31])
+            elif counter <= 16:  # 2 lowest part of arm
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 42])
+                else:
+                    writer.writerow([marker.id, 32])
+            elif counter <= 18:  # 2 highest part of forearm
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 43])
+                else:
+                    writer.writerow([marker.id, 33])
+            elif counter <= 20:  # 2 lowest part of forearm
+                if marker.pos.x > 0:
+                    writer.writerow([marker.id, 44])
+                else:
+                    writer.writerow([marker.id, 34])
             else:
-                writer.writerow([markers_data[counter].id, 11])
-            counter += 1
-
-        # 2 highest part of shins
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 22])
-            else:
-                writer.writerow([markers_data[counter].id, 12])
-            counter += 1
-
-        # 2 lowest part of thighs
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 23])
-            else:
-                writer.writerow([markers_data[counter].id, 13])
-            counter += 1
-
-        # 2 highest part of thighs
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 24])
-            else:
-                writer.writerow([markers_data[counter].id, 14])
-            counter += 1
-
-        # 4 markers for back
-        for i in range(1, 5):
-            writer.writerow([markers_data[counter].id, 5 * 10 + i])
-            counter += 1
-
-        # 2 highest part of arm
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 41])
-            else:
-                writer.writerow([markers_data[counter].id, 31])
-            counter += 1
-
-        # 2 lowest part of arm
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 42])
-            else:
-                writer.writerow([markers_data[counter].id, 32])
-            counter += 1
-
-        # 2 highest part of forearm
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 43])
-            else:
-                writer.writerow([markers_data[counter].id, 33])
-            counter += 1
-
-        # 2 lowest part of forearm
-        for i in range(0, 2):
-            if markers_data[counter].pos.x > 0:
-                writer.writerow([markers_data[counter].id, 44])
-            else:
-                writer.writerow([markers_data[counter].id, 34])
+                break
             counter += 1
 
 

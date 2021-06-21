@@ -46,63 +46,85 @@ def set_file_name():
 
 def create_markers_description(markers_data):
     markers_data.sort(key=lambda marker: marker.pos.z)
+    checker = set()
     with open(PATH + "BP.csv", 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["id", "body part"])
         counter = 1
-
         for marker in markers_data:
             if marker.pos.x > 0.6 or marker.pos.x < -0.6:
                 continue
-            if marker.pos.y > 0.1 or marker.pos.y < -0.6:
+            if marker.pos.y > 0.6 or marker.pos.y < -0.6:
                 continue
             if marker.pos.z > 2.7 or marker.pos.z < 0.03:
                 continue
             if counter <= 2:  # 2 lowest part of shins
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 21])
+                    checker.add(21)
                 else:
                     writer.writerow([marker.id, 11])
+                    checker.add(11)
             elif counter <= 4:  # 2 highest part of shins
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 22])
+                    checker.add(22)
                 else:
                     writer.writerow([marker.id, 12])
+                    checker.add(12)
             elif counter <= 6:  # 2 lowest part of thighs
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 23])
+                    checker.add(23)
                 else:
                     writer.writerow([marker.id, 13])
+                    checker.add(13)
             elif counter <= 8:  # 2 highest part of thighs
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 24])
+                    checker.add(24)
                 else:
                     writer.writerow([marker.id, 14])
+                    checker.add(14)
             elif counter <= 12:  # 4 markers for back
-                writer.writerow([marker.id, 5 * 10 + counter - 9])
+                writer.writerow([marker.id, 5 * 10 + counter - 8])
+                checker.add(5 * 10 + counter - 8)
             elif counter <= 14:  # 2 highest part of arm
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 41])
+                    checker.add(41)
                 else:
                     writer.writerow([marker.id, 31])
+                    checker.add(31)
             elif counter <= 16:  # 2 lowest part of arm
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 42])
+                    checker.add(42)
                 else:
                     writer.writerow([marker.id, 32])
+                    checker.add(32)
             elif counter <= 18:  # 2 highest part of forearm
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 43])
+                    checker.add(43)
                 else:
                     writer.writerow([marker.id, 33])
+                    checker.add(33)
             elif counter <= 20:  # 2 lowest part of forearm
                 if marker.pos.x > 0:
                     writer.writerow([marker.id, 44])
+                    checker.add(44)
                 else:
                     writer.writerow([marker.id, 34])
+                    checker.add(34)
             else:
                 break
             counter += 1
+    if len(checker) == 20:
+        print("description is created")
+    else:
+        print("description is bad")
+        print(checker)
 
 
 def get_name_from_time():
@@ -116,7 +138,6 @@ def receive_new_frame(frame_number, markers_data, rigid_body_count, labeled_mark
     # create descriptions
     if IS_FIRST:
         create_markers_description(markers_data)
-        print("description is created")
         IS_FIRST = False
 
     # print("frame ", frameNumber)

@@ -1,55 +1,53 @@
+from MarkerDataTypes import MarkerData, Vector
 from NatNetClient import NatNetClient
 import time
-import csv
+from myCSV import myCSV, HeaderType
 import os
-
-# Global variables
-RECORDING = False
-IS_FIRST = True
-TIME_START = 0
-COUNT = [0, 0, 0]
-PATH = ""
+from FixData import FixData
 
 # Constants
-HEADER = ["time", "id", "x", "y", "z"]
-DIR = r"Draft/"
+DIR_DRAFT = r"Draft/"
+DIR_COORDS = r"Coords/"
 TEMP = "temp.csv"
 TYPES = {1: "stoop",
          2: "squat",
          3: "sitStand"}
 
 
-def csv_save(markers_data, timestamp):
-    with open(PATH + TEMP, 'a', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        for marker in markers_data:
-            writer.writerow([timestamp - TIME_START, marker.id, marker.pos.x, marker.pos.y, marker.pos.z])
+class Record:
+    def __init__(self):
+        self.recording = False
+        self.is_first = True
+        self.time_start = 0
+        self.count = [0, 0, 0]
+        self.description = dict()
+        self.fixer = FixData()
+        temp = '_'.join(time.ctime().split())
+        package_name = '_'.join(temp.split(":"))
+        self.draft_path = DIR_DRAFT + package_name
+        self.coords_path = DIR_COORDS + package_name
+        self.draft_csv = myCSV(self.draft_path)
+        self.coords_csv = myCSV(self.coords_path)
+        os.mkdir(self.draft_path)
+        os.mkdir(self.coords_path)
 
+    def set_file_name(self):
+        print("Input type:")
+        type = int(input())
+        if type == 0:
+            os.remove(self.draft_path + r"/" + TEMP)
+            os.remove(self.coords_path + r"/" + TEMP)
+            print("deleted")
+        else:
+            self.count[type - 1] += 1
+            os.rename(self.draft_path + r"/" + TEMP,
+                      self.draft_path + r"/" + TYPES[type] + "_" + str(self.count[type - 1]) + ".csv")
+            os.rename(self.coords_path + r"/" + TEMP,
+                      self.coords_path + r"/" + TYPES[type] + "_" + str(self.count[type - 1]) + ".csv")
+            print("name is set")
 
-def create_csv():
-    with open(PATH + TEMP, 'w', newline='') as csv_file:
-        csv.writer(csv_file).writerow(HEADER)
-
-
-def set_file_name():
-    global COUNT
-    print("Input type:")
-    type = int(input())
-    if type == 0:
-        os.remove(PATH + TEMP)
-        print("deleted")
-    else:
-        COUNT[type - 1] += 1
-        os.rename(PATH + TEMP, PATH + TYPES[type] + "_" + str(COUNT[type - 1]) + ".csv")
-        print("name is set")
-
-
-def create_markers_description(markers_data):
-    markers_data.sort(key=lambda marker: marker.pos.z)
-    checker = set()
-    with open(PATH + "BP.csv", 'w', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["id", "body part"])
+    def create_markers_description(self, markers_data):
+        markers_data.sort(key=lambda marker: marker.pos.z)
         counter = 1
         for marker in markers_data:
             if marker.pos.x > 0.6 or marker.pos.x < -0.6:
@@ -60,126 +58,91 @@ def create_markers_description(markers_data):
                 continue
             if counter <= 2:  # 2 lowest part of shins
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 21])
-                    checker.add(21)
+                    self.description[21] = marker.id
                 else:
-                    writer.writerow([marker.id, 11])
-                    checker.add(11)
+                    self.description[11] = marker.id
             elif counter <= 4:  # 2 highest part of shins
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 22])
-                    checker.add(22)
+                    self.description[22] = marker.id
                 else:
-                    writer.writerow([marker.id, 12])
-                    checker.add(12)
+                    self.description[12] = marker.id
             elif counter <= 6:  # 2 lowest part of thighs
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 23])
-                    checker.add(23)
+                    self.description[23] = marker.id
                 else:
-                    writer.writerow([marker.id, 13])
-                    checker.add(13)
+                    self.description[13] = marker.id
             elif counter <= 8:  # 2 highest part of thighs
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 24])
-                    checker.add(24)
+                    self.description[24] = marker.id
                 else:
-                    writer.writerow([marker.id, 14])
-                    checker.add(14)
+                    self.description[14] = marker.id
             elif counter <= 12:  # 4 markers for back
-                writer.writerow([marker.id, 5 * 10 + counter - 8])
-                checker.add(5 * 10 + counter - 8)
+                self.description[5 * 10 + counter - 8] = marker.id
             elif counter <= 14:  # 2 highest part of arm
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 41])
-                    checker.add(41)
+                    self.description[41] = marker.id
                 else:
-                    writer.writerow([marker.id, 31])
-                    checker.add(31)
+                    self.description[31] = marker.id
             elif counter <= 16:  # 2 lowest part of arm
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 42])
-                    checker.add(42)
+                    self.description[42] = marker.id
                 else:
-                    writer.writerow([marker.id, 32])
-                    checker.add(32)
+                    self.description[32] = marker.id
             elif counter <= 18:  # 2 highest part of forearm
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 43])
-                    checker.add(43)
+                    self.description[43] = marker.id
                 else:
-                    writer.writerow([marker.id, 33])
-                    checker.add(33)
+                    self.description[33] = marker.id
             elif counter <= 20:  # 2 lowest part of forearm
                 if marker.pos.x > 0:
-                    writer.writerow([marker.id, 44])
-                    checker.add(44)
+                    self.description[44] = marker.id
                 else:
-                    writer.writerow([marker.id, 34])
-                    checker.add(34)
+                    self.description[34] = marker.id
             else:
                 break
             counter += 1
-    if len(checker) == 20:
-        print("description is created")
-    else:
-        print("description is bad")
-        print(checker)
+        if len(self.description) == 20:
+            print("description is created")
+        else:
+            print("description is bad")
+            print(self.description)
 
+    def receive_new_frame(self, frame_number, markers_data, rigid_body_count, labeled_marker_count, timestamp, is_recording):
+        # create descriptions
+        if self.is_first:
+            self.create_markers_description(markers_data)
+            self.draft_csv.save_bp(self.description)
+            self.coords_csv.save_bp(self.description)
+            self.is_first = False
 
-def get_name_from_time():
-    temp = '_'.join(time.ctime().split())
-    return '_'.join(temp.split(":"))
+        if not self.recording and is_recording:
+            self.recording = True
+            self.time_start = timestamp
+            print("started")
+            self.draft_csv.create_file(TEMP, HeaderType.COORDS)
+            self.coords_csv.create_file(TEMP, HeaderType.COORDS)
 
+        if self.recording and not is_recording:
+            self.recording = False
+            print("stopped")
+            self.set_file_name()
 
-def receive_new_frame(frame_number, markers_data, rigid_body_count, labeled_marker_count, timestamp, is_recording):
-    global RECORDING, TIME_START, IS_FIRST
-
-    # create descriptions
-    if IS_FIRST:
-        create_markers_description(markers_data)
-        IS_FIRST = False
-
-    # print("frame ", frameNumber)
-    # print("labeled ", labeled_marker_count)
-    # print("rigid ", rigid_body_count)
-    # print("timestamp ", timestamp)
-    # print("isRecording ", isRecording)
-
-    # for marker in markers_data:
-    #      print(marker.id)
-    #      print(marker.pos.x)
-    #      print(marker.pos.y)
-    #      print(marker.pos.z)
-
-    # print("***********************")
-
-    if not RECORDING and is_recording:
-        RECORDING = True
-        TIME_START = timestamp
-        print("started")
-        create_csv()
-
-    if RECORDING and not is_recording:
-        RECORDING = False
-        print("stopped")
-        set_file_name()
-
-    if RECORDING:
-        csv_save(markers_data, timestamp)
-        # print("recording...", frameNumber)
+        if self.recording:
+            self.draft_csv.save_markers(markers_data, timestamp - self.time_start)
+            self.coords_csv.save_markers(self.fixer.fix_data(markers_data, self.description), timestamp - self.time_start)
 
 
 if __name__ == '__main__':
-    if not os.path.exists(DIR):
-        os.mkdir(DIR)
+    if not os.path.exists(DIR_DRAFT):
+        os.mkdir(DIR_DRAFT)
 
-    PATH = DIR + get_name_from_time() + r"/"
+    if not os.path.exists(DIR_COORDS):
+        os.mkdir(DIR_COORDS)
 
-    os.mkdir(PATH)
+    recorder = Record()
 
     streaming_client = NatNetClient()
 
-    streaming_client.newFrameListener = receive_new_frame
+    streaming_client.newFrameListener = recorder.receive_new_frame
 
     streaming_client.run()

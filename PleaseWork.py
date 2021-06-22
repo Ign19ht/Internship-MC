@@ -1,4 +1,3 @@
-from MarkerDataTypes import MarkerData, Vector
 from NatNetClient import NatNetClient
 import time
 from myCSV import myCSV, HeaderType

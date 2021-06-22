@@ -17,21 +17,7 @@
 import socket
 import struct
 from threading import Thread
-from dataclasses import dataclass
-from typing import Any, List
-
-
-@dataclass
-class Vector:
-    x: Any
-    y: Any
-    z: Any
-
-
-@dataclass
-class MarkerData:
-    id: Any
-    pos: Vector
+from MarkerDataTypes import MarkerData, Vector
 
 
 def trace(*args):
@@ -246,7 +232,7 @@ class NatNetClient:
             for i in range(0, skeletonCount):
                 offset += self.__unpackSkeleton(data[offset:])
 
-        markers_data: List[MarkerData] = []
+        markers_data = []
 
         # Labeled markers (Version 2.3 and later)
         labeledMarkerCount = 0
@@ -263,7 +249,7 @@ class NatNetClient:
                 size = FloatValue.unpack(data[offset:offset + 4])
                 offset += 4
 
-                markers_data.append(MarkerData(id, Vector(pos[0], pos[1], pos[2])))
+                markers_data.append(MarkerData(str(id), Vector(pos[0], pos[1], pos[2])))
 
                 # Version 2.6 and later
                 if ((self.__natNetStreamVersion[0] == 2 and self.__natNetStreamVersion[1] >= 6) or # or major == 0

@@ -8,7 +8,7 @@ class HeaderType(Enum):
 
 
 HEADERS = [["time", "id", "x", "y", "z"],
-           ["time", "leg left", "leg right", "arm left", "arm right", "back", "floor/left leg", "floor/right leg"
+           ["time", "leg left", "leg right", "arm left", "arm right", "back", "floor/left leg", "floor/right leg",
             "left leg/lower back", "right leg/lower back", "left arm/upper back", "right arm/upper back",
             "left leg/back", "right leg/back", "left arm/back", "right arm/back"]]
 

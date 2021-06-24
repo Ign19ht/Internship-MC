@@ -4,7 +4,6 @@ import os
 from MarkerDataTypes import Vector
 from myCSV import myCSV, HeaderType
 
-
 # Constants
 PATH_COORDS = r"Coords/"
 PATH_ANGLES = r"Angles/"
@@ -27,6 +26,13 @@ class TranslateToAngles:
         cos = (bone1.x * bone2.x + bone1.y * bone2.y + bone1.z * bone2.z) / (len_bone1 * len_bone2)
 
         return math.degrees(math.acos(cos))
+
+    @staticmethod
+    def get_vector_of_the_floor(bone):
+        if bone is None:
+            return None
+        else:
+            return Vector(bone.x, bone.y, 0)
 
     @staticmethod
     def make_angles(markers_data, description):
@@ -61,10 +67,12 @@ class TranslateToAngles:
 
         # angles between:
         # floor and left leg
-        angles.append(TranslateToAngles.get_angle_between_bones(bones[0], Vector(bones[0].x, bones[0].y, 0)))
+        angles.append(TranslateToAngles.get_angle_between_bones(bones[0],
+                                                                TranslateToAngles.get_vector_of_the_floor(bones[0])))
 
         # floor and right leg
-        angles.append(TranslateToAngles.get_angle_between_bones(bones[2], Vector(bones[2].x, bones[2].y, 2)))
+        angles.append(TranslateToAngles.get_angle_between_bones(bones[2],
+                                                                TranslateToAngles.get_vector_of_the_floor(bones[2])))
 
         # lower back and left leg
         angles.append(TranslateToAngles.get_angle_between_bones(bones[1], bones[8]))
@@ -109,8 +117,8 @@ class TranslateToAngles:
             # get description
             temp_description = myCSV.get_description(PATH_COORDS + package)
             description = [[0 for _ in range(4)] for _ in range(5)]
-            for bp, id in temp_description:
-                description[bp // 10 - 1][bp % 10 - 1] = row["id"]
+            for bp, id in temp_description.items():
+                description[bp // 10 - 1][bp % 10 - 1] = id
 
             # translation files
             for file in files:
@@ -119,7 +127,7 @@ class TranslateToAngles:
 
                 print(file + ":", end=" ")
 
-                my_csv = myCSV(PATH_COORDS + package + r"/" + package)
+                my_csv = myCSV(PATH_ANGLES + package)
                 my_csv.create_file(file, HeaderType.ANGLES)
 
                 with open(PATH_COORDS + package + r"/" + file) as csv_file:

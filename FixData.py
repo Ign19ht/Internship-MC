@@ -35,6 +35,7 @@ class FixData:
                 extra_markers.append(marker)
 
         # check for disappeared markers
+        is_bad = False
         for marker_id, pos in fixed_data.items():
             if pos is None:  # if marker disappeared
                 bp = 0
@@ -51,7 +52,7 @@ class FixData:
                 pair_id = description[pair_bp]
 
                 if fixed_data[pair_id] is None:  # if the pair disappeared also
-                    print("Bone disappeared", bp, pair_bp)
+                    is_bad = True
                 else:
                     pair_pos = fixed_data[pair_id]
                     for marker in extra_markers:  # searching disappeared marker among extra markers
@@ -67,7 +68,7 @@ class FixData:
             if pos is not None:
                 result.append(MarkerData(marker_id, pos))
         result.sort(key=lambda marker: marker.id)
-        return result
+        return result, is_bad
 
     def post_processing(self):
         path_coords = r"Coords/"
@@ -119,6 +120,7 @@ class FixData:
                     # reading data at one point in time, fix them and save in new file
                     for row in reader:
                         if current_time != row["time"]:
+                            # TODO check fix_data (return data, bool)
                             my_csv.save_markers(file.name, self.fix_data(markers_data, description), current_time)
                             current_time = row["time"]
                             markers_data.clear()

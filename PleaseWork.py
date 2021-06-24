@@ -1,3 +1,5 @@
+import sys
+
 from NatNetClient import NatNetClient
 import time
 from myCSV import myCSV, HeaderType
@@ -15,6 +17,7 @@ TYPES = {1: "stoop",
 
 class Record:
     def __init__(self):
+        self.use_description = True
         self.recording = False
         self.is_first = True
         self.time_start = 0
@@ -28,21 +31,22 @@ class Record:
         self.draft_csv = myCSV(self.draft_path)
         self.coords_csv = myCSV(self.coords_path)
         os.mkdir(self.draft_path)
-        os.mkdir(self.coords_path)
+        if self.use_description:
+            os.mkdir(self.coords_path)
 
-    def set_file_name(self):
-        print("Input type:")
-        type = int(input())
+    def set_file_name(self, type):
         if type == 0:
             os.remove(self.draft_path + r"/" + TEMP)
-            os.remove(self.coords_path + r"/" + TEMP)
+            if self.use_description:
+                os.remove(self.coords_path + r"/" + TEMP)
             print("deleted")
         else:
             self.count[type - 1] += 1
             os.rename(self.draft_path + r"/" + TEMP,
                       self.draft_path + r"/" + TYPES[type] + "_" + str(self.count[type - 1]) + ".csv")
-            os.rename(self.coords_path + r"/" + TEMP,
-                      self.coords_path + r"/" + TYPES[type] + "_" + str(self.count[type - 1]) + ".csv")
+            if self.use_description:
+                os.rename(self.coords_path + r"/" + TEMP,
+                          self.coords_path + r"/" + TYPES[type] + "_" + str(self.count[type - 1]) + ".csv")
             print("name is set")
 
     def create_markers_description(self, markers_data):
@@ -106,12 +110,14 @@ class Record:
             print("description is bad")
             print(self.description)
 
-    def receive_new_frame(self, frame_number, markers_data, rigid_body_count, labeled_marker_count, timestamp, is_recording):
+    def receive_new_frame(self, frame_number, markers_data, rigid_body_count, labeled_marker_count, timestamp,
+                          is_recording):
         # create descriptions
         if self.is_first:
-            self.create_markers_description(markers_data)
-            self.draft_csv.save_bp(self.description)
-            self.coords_csv.save_bp(self.description)
+            if self.use_description:
+                self.create_markers_description(markers_data)
+                self.draft_csv.save_bp(self.description)
+                self.coords_csv.save_bp(self.description)
             self.is_first = False
 
         if not self.recording and is_recording:
@@ -119,16 +125,24 @@ class Record:
             self.time_start = timestamp
             print("started")
             self.draft_csv.create_file(TEMP, HeaderType.COORDS)
-            self.coords_csv.create_file(TEMP, HeaderType.COORDS)
+            if self.use_description:
+                self.coords_csv.create_file(TEMP, HeaderType.COORDS)
 
         if self.recording and not is_recording:
             self.recording = False
             print("stopped")
-            self.set_file_name()
+            print("Input type:")
+            self.set_file_name(int(input()))
 
         if self.recording:
-            self.draft_csv.save_markers(markers_data, timestamp - self.time_start)
-            self.coords_csv.save_markers(self.fixer.fix_data(markers_data, self.description), timestamp - self.time_start)
+            self.draft_csv.save_markers(TEMP, markers_data, timestamp - self.time_start)
+            if self.use_description:
+                fixed_data, is_bad = self.fixer.fix_data(markers_data, self.description)
+                if is_bad:
+                    print("bad data")
+                    self.set_file_name(0)
+                    sys.exit()
+                self.coords_csv.save_markers(TEMP, fixed_data, timestamp - self.time_start)
 
 
 if __name__ == '__main__':

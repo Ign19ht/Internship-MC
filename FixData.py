@@ -94,6 +94,10 @@ class FixData:
             # get files
             files = sorted(Path(path_draft + package).iterdir(), key=os.path.getmtime)
 
+            if files[0].name != "BP.csv":
+                print("no BP file")
+                continue
+
             # get description
             description = myCSV.get_description()
 
